@@ -2,6 +2,7 @@
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace ICMay2022
@@ -19,9 +20,11 @@ namespace ICMay2022
 
             // maximize the window
             driver.Manage().Window.Maximize();
-            
+
             login();
             createTimeAndMaterialRecord();
+            updateRecord();
+            deleteTheRecord();
         }
         public static void login()
         {
@@ -44,14 +47,14 @@ namespace ICMay2022
             {
                 Console.WriteLine("Login successfully, Test pass");
             }
-            else 
+            else
             {
                 Console.WriteLine("Login, Test pass, Test fail");
             }
         }
         public static void createTimeAndMaterialRecord()
         {
-         
+
             // find the Administartion tab
             IWebElement adminTab = driver.FindElement(By.XPath("/html/body/div[3]/div/div/ul/li[5]/a"));
             // click on Administartion tab
@@ -72,36 +75,109 @@ namespace ICMay2022
             //material.Click();
             // find code element and enter the code
             IWebElement code = driver.FindElement(By.Id("Code"));
-            code.SendKeys("DT001");
+            code.SendKeys("CMT");
             // find Description element and enter the Description
             IWebElement description = driver.FindElement(By.Id("Description"));
-            description.SendKeys("Stainless steel 1m bar");
+            description.SendKeys("Cement");
             // find Price element and enter the price
             IWebElement price = driver.FindElement(By.XPath("//*[@id='TimeMaterialEditForm']/div/div[4]/div/span[1]/span/input[1]"));
             price.SendKeys("150.00");
             // Find Save button element and click
-            IWebElement save = driver.FindElement(By.Id("SaveButton"));
+            IWebElement save = driver.FindElement(By.XPath("//*[@id='SaveButton']"));
             save.Click();
-            System.Threading.Thread.Sleep(2000);
+            Thread.Sleep(2000);
             // scroll the web page down
-            IJavaScriptExecutor js = driver as IJavaScriptExecutor;
-            js.ExecuteScript("window.scrollBy(0,200)");
+            //IJavaScriptExecutor js = driver as IJavaScriptExecutor;
+            //js.ExecuteScript("window.scrollBy(0,200)");
+            // click on go to last page button
+            IWebElement goToLastPageButton = driver.FindElement(By.XPath("//*[@id='tmsGrid']/div[4]/a[4]/span"));
+            goToLastPageButton.Click();
+            Thread.Sleep(2000);
 
-            //go to the last page of the table
-            IWebElement lastPgeArrow = driver.FindElement(By.XPath("//*[@id='tmsGrid']/div[4]/a[4]/span"));
-            lastPgeArrow.Click();
+            // check if material record has been created
+            IWebElement newCode = driver.FindElement(By.XPath("//*[@id='tmsGrid']/div[3]/table/tbody/tr[last()]/td[1]"));
 
-            IWebElement codeName = driver.FindElement(By.XPath("//*[@id='tmsGrid']/div[3]/table/tbody/tr[8]/td[1]"));
-            if (codeName.Text == "DT001")
+            if (newCode.Text == "CMT")
             {
-                Console.WriteLine($"Hello, {codeName.Text} is equal to DT001.");
+                Console.WriteLine("New material record created successfully.");
             }
             else
             {
-                Console.WriteLine($"Hello, {codeName.Text} is not equal to DT001.");
-                //*[@id="tmsGrid"]/div[3]/table/tbody/tr
+                Console.WriteLine("Material record hasn't been created.");
             }
 
         }
+
+        public static void updateRecord()
+        {
+            // click edit button
+            IWebElement editBtntbtn = driver.FindElement(By.XPath("//*[@id='tmsGrid']/div[3]/table/tbody/tr[last()]/td[5]/a[1]"));
+            editBtntbtn.Click();
+
+            //Change the code
+            IWebElement code = driver.FindElement(By.Id("Code"));
+            code.Clear();
+            code.SendKeys("CMT001");
+
+            // change the Description
+            IWebElement description = driver.FindElement(By.Id("Description"));
+            description.Clear();
+            description.SendKeys("Cement new");
+
+            // find Price element and enter the price
+            IWebElement price2 = driver.FindElement(By.XPath("//*[@id='TimeMaterialEditForm']/div/div[4]/div/span[1]/span/input[1]"));
+            price2.SendKeys("5");
+            //*[@id="TimeMaterialEditForm"]/div/div[4]/div/span[1]/span
+
+            // Find Save button element and click
+            IWebElement save = driver.FindElement(By.XPath("//*[@id='SaveButton']"));
+            save.Click();
+            Thread.Sleep(2000);
+            //Goto the last page
+            IWebElement goToLastPageButton = driver.FindElement(By.XPath("//*[@id='tmsGrid']/div[4]/a[4]/span"));
+            goToLastPageButton.Click();
+            Thread.Sleep(2000);
+
+            // check if material record has been created
+            IWebElement newCode = driver.FindElement(By.XPath("//*[@id='tmsGrid']/div[3]/table/tbody/tr[last()]/td[1]"));
+
+            if (newCode.Text == "CMT001")
+            {
+                Console.WriteLine("Edit the record");
+            }
+            else
+            {
+                Console.WriteLine("Not edit the record.");
+            }
+
+
+        }
+        public static void deleteTheRecord()
+        {
+            //Goto the last page
+            IWebElement goToLastPageButton = driver.FindElement(By.XPath("//*[@id='tmsGrid']/div[4]/a[4]/span"));
+            goToLastPageButton.Click();
+            // get the item count before delete
+            IWebElement noOfItems = driver.FindElement(By.XPath("//*[@id='tmsGrid']/div[4]/span[2]"));
+            string text = noOfItems.Text;
+            string[] textSplit = text.Split(" ");
+            Console.Write("Number of items before delete the record: " + textSplit[4] + "  ");
+            // click the delete button
+            Thread.Sleep(1000);
+            IWebElement deleteButton = driver.FindElement(By.XPath("//*[@id='tmsGrid']/div[3]/table/tbody/tr[last()]/td[5]/a[2]"));
+            deleteButton.Click();
+            Thread.Sleep(1000);
+            driver.SwitchTo().Alert().Accept();
+            Thread.Sleep(1000);
+
+            // get the item count before delete
+            IWebElement noOfItems2 = driver.FindElement(By.XPath("//*[@id='tmsGrid']/div[4]/span[2]"));
+            string text2 = noOfItems2.Text;
+            string[] textSplit2 = text2.Split(" ");
+            Console.Write("Number of items after delete the record: " + textSplit2[4]);
+
+
+        }
+
     }
 }
