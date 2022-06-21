@@ -1,0 +1,174 @@
+{
+	"info": {
+		"_postman_id": "3604642a-98c1-46a4-812b-e8632a4f67aa",
+		"name": "Dummy APIs E2E Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21458372"
+	},
+	"item": [
+		{
+			"name": "Create new record in database",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Status check\r",
+							"pm.test(\"Status code check\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//key-value pair check\r",
+							"pm.test(\"Response key-value pair check and validate if the age has been updated \", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"     //Nmae check\r",
+							"    pm.expect(jsonData.data.name).to.eql(\"Dulika\");\r",
+							"    //Salary check\r",
+							"    pm.expect(jsonData.data.salary).to.eql(\"123000\");\r",
+							"    // Age check\r",
+							"    pm.expect(jsonData.data.age).to.eql(\"25\");\r",
+							"});\r",
+							"// set employee id as environment varaiable\r",
+							"pm.test(\"check key value pair in the response \", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"pm.environment.set(\"employeeID\", jsonData.data.id);\r",
+							"\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Dulika1000\",\r\n    \"salary\": \"123000\",\r\n    \"age\": \"23\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://dummy.restapiexample.com/api/v1/create",
+					"protocol": "https",
+					"host": [
+						"dummy",
+						"restapiexample",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update an employee record",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Status check\r",
+							"pm.test(\"Status code check\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//key-value pair check\r",
+							"pm.test(\"Response key-value pair check and validate if the age has been updated \", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"     //Nmae check\r",
+							"    pm.expect(jsonData.data.name).to.eql(\"Dulika\");\r",
+							"    //Salary check\r",
+							"    pm.expect(jsonData.data.salary).to.eql(\"123000\");\r",
+							"    // Age check\r",
+							"    pm.expect(jsonData.data.age).to.eql(\"25\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Dulika\",\r\n    \"salary\": \"123000\",\r\n    \"age\": \"25\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://dummy.restapiexample.com/api/v1/update/{{employeeID}}",
+					"protocol": "https",
+					"host": [
+						"dummy",
+						"restapiexample",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"update",
+						"{{employeeID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete an employee record",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code check\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check delete response key-value pair\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonData.status).to.eql(\"success\");\r",
+							"    pm.expect(jsonData.data.toSting).to.eql(pm.environment.get(\"employeeID\").toSting);\r",
+							"    pm.expect(jsonData.message).to.eql(\"Successfully! Record has been deleted\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://dummy.restapiexample.com/api/v1/delete/{{employeeID}}",
+					"protocol": "https",
+					"host": [
+						"dummy",
+						"restapiexample",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"delete",
+						"{{employeeID}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
